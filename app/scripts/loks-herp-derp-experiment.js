@@ -6,7 +6,6 @@ LOK's herp derp touch driven 3d js animation experiment
 Inspired from 9element's matrix3d tutorial ft. sylvester matrix lib
 Copyright (c) 2014 wonglok
 Licensed under the MIT license.
-(#homeBrewCrap lol)
 =================================================*/
 'use strict';
 (function() {
