@@ -354,13 +354,27 @@ module.exports = function (grunt) {
             }
         },
         cssmin: {
-            dist: {
+            tidy: {
+                options: {
+                    report: 'gzip',
+                    banner:'/* Lok\'s little experiment. \n 3Dmatrix,JS,Touch Animation \n Licensed Under MIT. */'
+                },
                 files: {
-                    '<%= yeoman.dist %>/styles/main.css': [
-                        '.tmp/styles/{,*/}*.css',
-                        '<%= yeoman.app %>/styles/{,*/}*.css'
+                    '<%= yeoman.dist %>/styles/tidy.css': [
+                       '<%= yeoman.dist %>/styles/tidy.css'
                     ]
                 }
+            }
+        },
+        uncss: {
+            dist: {
+                options: {
+                    // stylesheets: ['dist/styles/tidy.css']
+                },
+                files: {
+                    'dist/styles/tidy.css': ['app/index.html']
+                }
+
             }
         },
         htmlmin: {
@@ -425,7 +439,6 @@ module.exports = function (grunt) {
                 'imagemin',
                 'svgmin',
                 'htmlmin',
-                'cssmin',
             ]
         },
         // bower: {
@@ -447,16 +460,7 @@ module.exports = function (grunt) {
                 }
             },
         },
-        uncss: {
-            dist: {
-                files: {
-                    'dist/styles/tidy.css': ['app/index.html']
-                },
-                options:{
-                    'timeout':1000
-                }
-            }
-        },
+
         'bower-install': {
             target: {
                 // Point to the files that should be updated when
@@ -480,7 +484,7 @@ module.exports = function (grunt) {
                         name: 'Wong Lok',
                         email: 'wonglok@wonglok.com'
                     },
-                    repo: 'https://' + process.env.GH_TOKEN + '@github.com/user/private-repo.git',
+                    repo: 'git@github.com:wonglok/WebPerformanceExperimentz.git',
                     base: 'dist'
                 },
                 src: ['**']
@@ -522,15 +526,16 @@ module.exports = function (grunt) {
         'useminPrepare',
         'concurrent:dist',
         //'requirejs',
-        'cssmin',
-        'uncss',
+        //'cssmin',
         'responsive_images:dev',
         'concat',
         'uglify',
         'exec:packer',
         'copy',
+        'uncss',
+        'cssmin:tidy',
         'rev',
-        'usemin'
+        'usemin',
     ]);
 
     grunt.registerTask('de', [
