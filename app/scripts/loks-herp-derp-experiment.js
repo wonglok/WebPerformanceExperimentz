@@ -1,7 +1,7 @@
 /*================================================
 LOK's herp derp touch driven 3d js animation experiment
 ~Native WebkitCSSMatrix jsObject~
-~ Custom 3d animation @v@ ~
+~ Custom 3D animation @o@ ~
 
 Inspired from 9element's matrix3d tutorial ft. sylvester matrix lib
 Copyright (c) 2014 wonglok
@@ -11,7 +11,7 @@ Licensed under the MIT license.
 (function() {
 
 	/*=====================================
-	Varz
+	Variables
 	=====================================*/
 	var dom = window.document.querySelectorAll('.target')[0],
 
@@ -47,17 +47,17 @@ Licensed under the MIT license.
 		var delta = effectStateFactory();
 
 
-		delta.r.x =	-0.2;
-		delta.r.y =	-0.2;
-		delta.r.z =	-0.2;
+		delta.r.x =	-0.6;
+		delta.r.y =	-1;
+		// delta.r.z =	-0.6;
 
-		delta.t.x =	0.2;
-		delta.t.y =	0.2;
-		delta.t.z =	0.2;
+		// // delta.t.x =	0.2;
+		// // delta.t.y =	0.2;
+		// // delta.t.z =	0.2;
 
-		delta.s.x =	1-0.002;
-		delta.s.y =	1-0.002;
-		delta.s.z =	1-0.002;
+		// delta.s.x =	1-0.002;
+		// delta.s.y =	1-0.002;
+		// delta.s.z =	1-0.002;
 
 
 		//applyDelta
@@ -68,17 +68,17 @@ Licensed under the MIT license.
 	function updateEffectStateRegularly() {
 		var delta = effectStateFactory();
 
-		delta.r.x =	0.15;
-		delta.r.y =	0.15;
-		delta.r.z =	0.15;
+		delta.r.x =	0.3;
+		delta.r.y =	0.5;
+		// delta.r.z =	0.5;
 
 		delta.t.x =	0.0;
 		delta.t.y =	0.0;
 		delta.t.z =	0.0;
 
-		delta.s.x =	1+0.0006;
-		delta.s.y =	1+0.0006;
-		delta.s.z =	1+0.0006;
+		// delta.s.x =	1+0.0006;
+		// delta.s.y =	1+0.0006;
+		// delta.s.z =	1+0.0002;
 
 		//applyDelta
 		applyDeltaToEffectState(delta);
@@ -121,13 +121,13 @@ Licensed under the MIT license.
 	function getMatrix3dCSSManually(m) {
 		//tries to limit the floating point
 		// _.each(m,function(val,key){
-		//  m[key] = m[key].toFixed(6);
+		//  m[key] = m[key].toFixed(20);
 		// });
 		return 'matrix3d(' +
-			m.m11 + ',' + m.m12 + ',' + m.m13 + ',' + m.m14 + ',' +
-			m.m21 + ',' + m.m22 + ',' + m.m23 + ',' + m.m24 + ',' +
-			m.m31 + ',' + m.m32 + ',' + m.m33 + ',' + m.m34 + ',' +
-			m.m41 + ',' + m.m42 + ',' + m.m43 + ',' + m.m44 +
+			m.m11+ ',' + m.m12+ ',' + m.m13+ ',' + m.m14+ ',' +
+			m.m21+ ',' + m.m22+ ',' + m.m23+ ',' + m.m24+ ',' +
+			m.m31+ ',' + m.m32+ ',' + m.m33+ ',' + m.m34+ ',' +
+			m.m41+ ',' + m.m42+ ',' + m.m43+ ',' + m.m44+
 		')';
 	}
 
@@ -143,6 +143,7 @@ Licensed under the MIT license.
 	}
 
 
+
 	/*  ============================================================
 	Update the Matrix different status
 	============================================================  */
@@ -156,7 +157,7 @@ Licensed under the MIT license.
 			s = effectState.s
 		;
 
-		//NATIVE PERFOMRNACE *v*
+		// *v*
 		domWebKit3dMatrix = currentMatrix3d
 								.rotate(
 									r.x,
@@ -219,11 +220,14 @@ Licensed under the MIT license.
 	function init() {
 		setupEventsListers();
 		setupRegularUpdaters();
-		window.requestAnimationFrame(animateLoop);
+
+		setTimeout(function(){
+			window.requestAnimationFrame(animateLoop);
+		},1000/50);
 	}
 
 	window.addEventListener('DOMContentLoaded', function() {
-		init();
+		window.requestAnimationFrame(init);
 	}, false);
 
 

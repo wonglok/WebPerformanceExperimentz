@@ -3,3 +3,5 @@ dist
 .tmp
 .sass-cache
 
+
+.grunt/grunt-gh-pages/gh-pages/src/

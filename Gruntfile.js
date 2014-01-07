@@ -22,6 +22,8 @@ module.exports = function (grunt) {
     // load all grunt tasks
 
     //https://github.com/darkfe/grunt-packer
+    grunt.loadNpmTasks('grunt-exec');
+    grunt.loadNpmTasks('grunt-uncss');
     grunt.loadNpmTasks('grunt-jspacker');
 
     grunt.loadNpmTasks('grunt-bower-install');
@@ -364,7 +366,8 @@ module.exports = function (grunt) {
         htmlmin: {
             dist: {
                 options: {
-                    /*removeCommentsFromCDATA: true,
+                    /*
+                    removeCommentsFromCDATA: true,
                     // https://github.com/yeoman/grunt-usemin/issues/44
                     //collapseWhitespace: true,
                     collapseBooleanAttributes: true,
@@ -372,7 +375,8 @@ module.exports = function (grunt) {
                     removeRedundantAttributes: true,
                     useShortDoctype: true,
                     removeEmptyAttributes: true,
-                    removeOptionalTags: true*/
+                    removeOptionalTags: true
+                    */
                 },
                 files: [{
                     expand: true,
@@ -420,7 +424,8 @@ module.exports = function (grunt) {
                 //'compass:dist',
                 'imagemin',
                 'svgmin',
-                'htmlmin'
+                'htmlmin',
+                'cssmin',
             ]
         },
         // bower: {
@@ -433,12 +438,24 @@ module.exports = function (grunt) {
         // },
         packer: {
             options: {
+                separator: ': ',
+                punctuation: 'alert("test");',
             },
             dist: {
                 files: {
                     'dist/scripts/core.js': ['dist/scripts/core.js'],
                 }
             },
+        },
+        uncss: {
+            dist: {
+                files: {
+                    'dist/styles/tidy.css': ['app/index.html']
+                },
+                options:{
+                    'timeout':1000
+                }
+            }
         },
         'bower-install': {
             target: {
@@ -457,10 +474,24 @@ module.exports = function (grunt) {
             }
         },
         'gh-pages': {
-            options: {
-                base: 'dist'
-            },
-            src: ['**']
+            dist:{
+                options: {
+                    user: {
+                        name: 'Wong Lok',
+                        email: 'wonglok@wonglok.com'
+                    },
+                    repo: 'https://' + process.env.GH_TOKEN + '@github.com/user/private-repo.git',
+                    base: 'dist'
+                },
+                src: ['**']
+            }
+        },
+        exec: {
+            packer: {
+                command: function(){
+                    return 'packer -i ./dist/scripts/core.js -o ./dist/scripts/core.js -b yes -s yes';
+                }
+            }
         }
     });
 
@@ -492,10 +523,11 @@ module.exports = function (grunt) {
         'concurrent:dist',
         //'requirejs',
         'cssmin',
+        'uncss',
         'responsive_images:dev',
         'concat',
         'uglify',
-        'packer',
+        'exec:packer',
         'copy',
         'rev',
         'usemin'
@@ -511,6 +543,15 @@ module.exports = function (grunt) {
         'build'
     ]);
 
+    grunt.registerTask('page', function(){
+
+        grunt.task.run([
+            // 'forceOn',
+            'build',
+            'gh-pages'
+            // 'forceOff',
+        ]);
+    });
 
 
     grunt.registerTask('screenshots', [

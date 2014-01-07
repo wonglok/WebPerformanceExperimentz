@@ -1,7 +1,9 @@
 {
   "name": "webp",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "packer": "0.0.5"
+  },
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-copy": "~0.4.1",
@@ -34,7 +36,9 @@
     "packer": "0.0.5",
     "grunt-jspacker": "~0.1.1",
     "grunt-bower-install": "~0.8.0",
-    "grunt-gh-pages": "~0.9.0"
+    "grunt-gh-pages": "~0.9.0",
+    "grunt-uncss": "~0.1.6",
+    "grunt-exec": "~0.4.3"
   },
   "engines": {
     "node": ">=0.8.0"
