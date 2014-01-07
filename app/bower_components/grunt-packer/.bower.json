@@ -1,0 +1,13 @@
+{
+  "name": "grunt-packer",
+  "homepage": "https://github.com/darkfe/grunt-packer",
+  "_release": "fb9c2dec15",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "fb9c2dec1528f5ab468ff0bd21e6d106bffc62a9"
+  },
+  "_source": "https://github.com/darkfe/grunt-packer.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/darkfe/grunt-packer.git"
+}

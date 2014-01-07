@@ -1,0 +1,42 @@
+{
+  "name": "grunt-jspacker",
+  "description": "grunt-jspacker",
+  "version": "0.1.1",
+  "homepage": "https://github.com/zhangyu/grunt-packer",
+  "author": {
+    "name": "zhangyu",
+    "email": "i@darkfe.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/zhangyu/grunt-packer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zhangyu/grunt-packer/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/zhangyu/grunt-packer/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "Gruntfile.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "dependencies":{
+    "packer":"~0.0.5"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.1"
+  },
+  "keywords": [
+    "gruntplugin"
+  ]
+}
