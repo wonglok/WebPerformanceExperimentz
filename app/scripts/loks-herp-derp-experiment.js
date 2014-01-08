@@ -48,17 +48,17 @@ Licensed under the MIT license.
 		var delta = effectStateFactory();
 
 
-		// delta.r.x =	-1.6;
-		// delta.r.y =	-1;
+		delta.r.x =	-0.5;
+		delta.r.y =	-0.5;
 		// delta.r.z =	-1.6;
 
 		// delta.t.x =	-0.2;
 		// delta.t.y =	-0.2;
 		// delta.t.z =	-0.2;
 
-		// delta.s.x =	1-0.0007;
-		// delta.s.y =	1-0.0007;
-		// delta.s.z =	1-0.0007;
+		delta.s.x =	1-0.0007;
+		delta.s.y =	1-0.0007;
+		delta.s.z =	1-0.0007;
 
 		//applyDelta
 		eventBasedDeltaUpdaterCallback = function(){
@@ -70,9 +70,9 @@ Licensed under the MIT license.
 	function updateDeltaRegularly() {
 		var delta = effectStateFactory();
 
-		delta.r.x =	0.02;
-		delta.r.y =	0.02;
-		delta.r.z =	0.02;
+		delta.r.x =	0.1;
+		delta.r.y =	0.1;
+		// delta.r.z =	-0.035;
 
 		// delta.t.x =	-0.3;
 		// delta.t.y =	-0.3;
@@ -114,9 +114,7 @@ Licensed under the MIT license.
 	/*=====================================
 	Generate WebKitCSSMatrix String
 	=====================================*/
-	function getMatrix3dCSS(matrix){
-		return getMatrix3dCSSManually(matrix);
-	}
+	var getMatrix3dCSS = getMatrix3dCSSManually;
 
 	//enforced version
 	function getMatrix3dCSSManually(m) {
@@ -182,7 +180,8 @@ Licensed under the MIT license.
 	============================================================  */
 	function updateDom() {
 		var result = getMatrix3dCSS(domWebKit3dMatrix);
-		dom.style['-webkit-transform'] = result;
+		if (result !== dom.style['-webkit-transform'])
+			dom.style['-webkit-transform'] = result;
 	}
 
 
@@ -211,14 +210,16 @@ Licensed under the MIT license.
 		window.addEventListener('mousemove', updateDeltaUponEvent, false);
 	}
 
-	function setupRegularUpdaters(){
+	//static framerate.
+	function setupDeltaDigest(){
 		setInterval(function(){
 			if (eventBasedDeltaUpdaterCallback){
 				eventBasedDeltaUpdaterCallback();
 				eventBasedDeltaUpdaterCallback = null;
 			}
 			updateDeltaRegularly();
-		},1000/120);
+
+		},7);
 	}
 
 	/*=====================================
@@ -226,7 +227,7 @@ Licensed under the MIT license.
 	=====================================*/
 	function init() {
 		setupEventsListers();
-		setupRegularUpdaters();
+		setupDeltaDigest();
 		animateLoop();
 	}
 
