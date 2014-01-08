@@ -46,7 +46,7 @@ Licensed under the MIT license.
 	/*=====================================
 	Update the effect state upon interval or events (touchmove)
 	=====================================*/
-	function eventDeltaHandler(event) {
+	function deltaEventHandelr(event) {
 		event.preventDefault();
 		var delta = effectStateFactory();
 
@@ -70,7 +70,7 @@ Licensed under the MIT license.
 
 	}
 
-	function intervalDeltaHandler() {
+	function deltaIntervalHandler() {
 		var delta = effectStateFactory();
 
 		delta.r.x =	0.1;
@@ -191,13 +191,13 @@ Licensed under the MIT license.
 	/*=====================================
 	Event Emitterrrz
 	=====================================*/
-	function setupEventEmitters(){
+	function setupEventEmitterz(){
 
-		setInterval(intervalDeltaHandler, 10);
+		setInterval(deltaIntervalHandler, 10);
 
 		//for production, both need to coded with an adapter.
-		window.addEventListener('touchmove', eventDeltaHandler, false);
-		window.addEventListener('mousemove', eventDeltaHandler, false);
+		window.addEventListener('touchmove', deltaEventHandelr, false);
+		window.addEventListener('mousemove', deltaEventHandelr, false);
 	}
 
 
@@ -206,25 +206,39 @@ Licensed under the MIT license.
 	Delta Digest
 	=====================================*/
 	function digestAllDelta(){
-		if (digest.intervalBased){
-			digest.intervalBased();
-			digest.intervalBased = null;
-		}
+		var skipRender = false;
 
 		if (digest.eventBased){
 			digest.eventBased();
 			digest.eventBased = null;
+
+			skipRender = false;
+		}else{
+			skipRender = true;
 		}
+
+		if (digest.intervalBased){
+
+			digest.intervalBased();
+			digest.intervalBased = null;
+
+			skipRender = false;
+		}else{
+			skipRender = true;
+		}
+
+		return skipRender;
 	}
 
 	/*  ============================================================
-	Render
+	renderz
 	============================================================  */
-	function render() {
-		digestAllDelta();
+	function renderz() {
+		window.requestAnimationFrame(renderz);
+		var skipRender = digestAllDelta();
+		if (skipRender) {return;}
 		updateMatrix();
 		updateDom();
-		window.requestAnimationFrame(render);
 	}
 
 
@@ -232,8 +246,8 @@ Licensed under the MIT license.
 	Engine
 	=====================================*/
 	function init() {
-		setupEventEmitters();
-		render();
+		setupEventEmitterz();
+		renderz();
 	}
 
 	window.addEventListener('DOMContentLoaded', function() {
