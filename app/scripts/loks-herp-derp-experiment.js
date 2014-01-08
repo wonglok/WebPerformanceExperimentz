@@ -180,23 +180,12 @@ Licensed under the MIT license.
 	============================================================  */
 	function updateDom() {
 		var result = getMatrix3dCSS(domWebKit3dMatrix);
-		if (result !== dom.style['-webkit-transform'])
+		if (result !== dom.style['-webkit-transform']){
 			dom.style['-webkit-transform'] = result;
+		}
 	}
 
 
-	/*  ============================================================
-	Rednerinnnnnng
-	============================================================  */
-	function render() {
-		updateMatrix();
-		updateDom();
-	}
-
-	function animateLoop() {
-		render();
-		window.requestAnimationFrame(animateLoop);
-	}
 
 
 	/*=====================================
@@ -211,24 +200,33 @@ Licensed under the MIT license.
 	}
 
 	//static framerate.
-	function setupDeltaDigest(){
-		setInterval(function(){
-			if (eventBasedDeltaUpdaterCallback){
-				eventBasedDeltaUpdaterCallback();
-				eventBasedDeltaUpdaterCallback = null;
-			}
-			updateDeltaRegularly();
+	function setupIntervalDeltaDigest(){
 
-		},7);
+		updateDeltaRegularly();
+
+		if (eventBasedDeltaUpdaterCallback){
+			eventBasedDeltaUpdaterCallback();
+			eventBasedDeltaUpdaterCallback = null;
+		}
 	}
+
+	/*  ============================================================
+	Rednerinnnnnng
+	============================================================  */
+	function render() {
+		setupIntervalDeltaDigest();
+		updateMatrix();
+		updateDom();
+		window.requestAnimationFrame(render);
+	}
+
 
 	/*=====================================
 	Engine *Start*
 	=====================================*/
 	function init() {
 		setupEventsListers();
-		setupDeltaDigest();
-		animateLoop();
+		render();
 	}
 
 	window.addEventListener('DOMContentLoaded', function() {
