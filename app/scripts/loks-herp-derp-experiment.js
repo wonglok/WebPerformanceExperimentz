@@ -103,11 +103,11 @@ Licensed under the MIT license.
 		effectState.s.z *=	delta.s.z;
 
 
-		requestAnimationFrame(function(){
-			if (Math.random() <= 0.15){
-				// console.table(effectState);
-			}
-		});
+		// requestAnimationFrame(function(){
+		// 	if (Math.random() <= 0.15){
+		// 		// console.table(effectState);
+		// 	}
+		// });
 	}
 
 	/*=====================================
@@ -134,7 +134,7 @@ Licensed under the MIT license.
 	//native version
 	function getMatrix3dCSSNatively(webkitMatrix) {
 		//sometimes it returns 2dmatrix
-		//thus does not enable layer promotion;
+		//does not enable layer promotion;
 		//eg. rotateZ does not enable this
 
 		//for translateX,Y, it would give the integer value instead of floating point value.
@@ -220,10 +220,7 @@ Licensed under the MIT license.
 	function init() {
 		setupEventsListers();
 		setupRegularUpdaters();
-
-		setTimeout(function(){
-			window.requestAnimationFrame(animateLoop);
-		},1000/50);
+		animateLoop();
 	}
 
 	window.addEventListener('DOMContentLoaded', function() {
