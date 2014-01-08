@@ -17,6 +17,7 @@ Licensed under the MIT license.
 
 		matrixTemplate = new window['WebKitCSSMatrix'](),
 		domWebKit3dMatrix = new window['WebKitCSSMatrix'](),
+		eventBasedDeltaUpdaterCallback,
 
 		effectStateFactory = function(){
 			return {
@@ -42,43 +43,44 @@ Licensed under the MIT license.
 	/*=====================================
 	Update the effect state upon interval or events (touchmove)
 	=====================================*/
-	function updateEffectStateOnEvent(event) {
+	function updateDeltaUponEvent(event) {
 		event.preventDefault();
 		var delta = effectStateFactory();
 
 
-		delta.r.x =	-0.6;
-		delta.r.y =	-1;
-		// delta.r.z =	-0.6;
+		// delta.r.x =	-1.6;
+		// delta.r.y =	-1;
+		// delta.r.z =	-1.6;
 
-		// // delta.t.x =	0.2;
-		// // delta.t.y =	0.2;
-		// // delta.t.z =	0.2;
+		// delta.t.x =	-0.2;
+		// delta.t.y =	-0.2;
+		// delta.t.z =	-0.2;
 
-		// delta.s.x =	1-0.002;
-		// delta.s.y =	1-0.002;
-		// delta.s.z =	1-0.002;
-
+		// delta.s.x =	1-0.0007;
+		// delta.s.y =	1-0.0007;
+		// delta.s.z =	1-0.0007;
 
 		//applyDelta
-		applyDeltaToEffectState(delta);
+		eventBasedDeltaUpdaterCallback = function(){
+			applyDeltaToEffectState(delta);
+		};
 
 	}
 
-	function updateEffectStateRegularly() {
+	function updateDeltaRegularly() {
 		var delta = effectStateFactory();
 
-		delta.r.x =	0.3;
-		delta.r.y =	0.5;
-		// delta.r.z =	0.5;
+		delta.r.x =	0.02;
+		delta.r.y =	0.02;
+		delta.r.z =	0.02;
 
-		delta.t.x =	0.0;
-		delta.t.y =	0.0;
-		delta.t.z =	0.0;
+		// delta.t.x =	-0.3;
+		// delta.t.y =	-0.3;
+		// delta.t.z =	-0.3;
 
 		// delta.s.x =	1+0.0006;
 		// delta.s.y =	1+0.0006;
-		// delta.s.z =	1+0.0002;
+		// delta.s.z =	1+0.0000;
 
 		//applyDelta
 		applyDeltaToEffectState(delta);
@@ -101,7 +103,6 @@ Licensed under the MIT license.
 		effectState.s.x *=	delta.s.x;
 		effectState.s.y *=	delta.s.y;
 		effectState.s.z *=	delta.s.z;
-
 
 		// requestAnimationFrame(function(){
 		// 	if (Math.random() <= 0.15){
@@ -180,7 +181,8 @@ Licensed under the MIT license.
 	Apply the css string to the dom
 	============================================================  */
 	function updateDom() {
-		dom.style['-webkit-transform'] = getMatrix3dCSS(domWebKit3dMatrix);
+		var result = getMatrix3dCSS(domWebKit3dMatrix);
+		dom.style['-webkit-transform'] = result;
 	}
 
 
@@ -204,14 +206,19 @@ Licensed under the MIT license.
 	function setupEventsListers(){
 		//for production, both need to coded with an adapter.
 
-		window.addEventListener('touchmove', updateEffectStateOnEvent, false);
+		window.addEventListener('touchmove', updateDeltaUponEvent, false);
 
-		window.addEventListener('mousemove', updateEffectStateOnEvent, false);
+		window.addEventListener('mousemove', updateDeltaUponEvent, false);
 	}
+
 	function setupRegularUpdaters(){
 		setInterval(function(){
-			updateEffectStateRegularly();
-		},1000/30);
+			if (eventBasedDeltaUpdaterCallback){
+				eventBasedDeltaUpdaterCallback();
+				eventBasedDeltaUpdaterCallback = null;
+			}
+			updateDeltaRegularly();
+		},1000/120);
 	}
 
 	/*=====================================
