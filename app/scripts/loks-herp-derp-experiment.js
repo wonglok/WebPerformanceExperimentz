@@ -17,8 +17,10 @@ Licensed under the MIT license.
 
 		matrixTemplate = new window['WebKitCSSMatrix'](),
 		domWebKit3dMatrix = new window['WebKitCSSMatrix'](),
-		eventBasedDeltaUpdaterCallback,
-		intervalBasedDeltaUpdaterCallback,
+		digest = {
+			eventBased: null,
+			intervalBased: null,
+		},
 
 		effectStateFactory = function(){
 			return {
@@ -44,7 +46,7 @@ Licensed under the MIT license.
 	/*=====================================
 	Update the effect state upon interval or events (touchmove)
 	=====================================*/
-	function updateDeltaUponEvent(event) {
+	function eventDeltaHandler(event) {
 		event.preventDefault();
 		var delta = effectStateFactory();
 
@@ -62,13 +64,13 @@ Licensed under the MIT license.
 		delta.s.z =	1-0.0007;
 
 		//applyDelta
-		eventBasedDeltaUpdaterCallback = function(){
-			applyDeltaToEffectState(delta);
+		digest.eventBased = function(){
+			applyDelta(delta);
 		};
 
 	}
 
-	function updateDeltaRegularly() {
+	function intervalDeltaHandler() {
 		var delta = effectStateFactory();
 
 		delta.r.x =	0.1;
@@ -84,12 +86,12 @@ Licensed under the MIT license.
 		// delta.s.z =	1+0.0000;
 
 		//applyDelta
-		intervalBasedDeltaUpdaterCallback = function(){
-			applyDeltaToEffectState(delta);
+		digest.intervalBased = function(){
+			applyDelta(delta);
 		};
 	}
 
-	function applyDeltaToEffectState(delta){
+	function applyDelta(delta){
 		if (!!!delta){
 			return;
 		}
@@ -107,11 +109,6 @@ Licensed under the MIT license.
 		effectState.s.y *=	delta.s.y;
 		effectState.s.z *=	delta.s.z;
 
-		// requestAnimationFrame(function(){
-		// 	if (Math.random() <= 0.15){
-		// 		// console.table(effectState);
-		// 	}
-		// });
 	}
 
 	/*=====================================
@@ -196,11 +193,11 @@ Licensed under the MIT license.
 	=====================================*/
 	function setupEventEmitters(){
 
-		setInterval(updateDeltaRegularly, 10);
+		setInterval(intervalDeltaHandler, 10);
 
 		//for production, both need to coded with an adapter.
-		window.addEventListener('touchmove', updateDeltaUponEvent, false);
-		window.addEventListener('mousemove', updateDeltaUponEvent, false);
+		window.addEventListener('touchmove', eventDeltaHandler, false);
+		window.addEventListener('mousemove', eventDeltaHandler, false);
 	}
 
 
@@ -208,16 +205,15 @@ Licensed under the MIT license.
 	/*=====================================
 	Delta Digest
 	=====================================*/
-	function digestDelta(){
-		if (intervalBasedDeltaUpdaterCallback){
-			intervalBasedDeltaUpdaterCallback();
-			intervalBasedDeltaUpdaterCallback = null;
+	function digestAllDelta(){
+		if (digest.intervalBased){
+			digest.intervalBased();
+			digest.intervalBased = null;
 		}
 
-
-		if (eventBasedDeltaUpdaterCallback){
-			eventBasedDeltaUpdaterCallback();
-			eventBasedDeltaUpdaterCallback = null;
+		if (digest.eventBased){
+			digest.eventBased();
+			digest.eventBased = null;
 		}
 	}
 
@@ -225,7 +221,7 @@ Licensed under the MIT license.
 	Render
 	============================================================  */
 	function render() {
-		digestDelta();
+		digestAllDelta();
 		updateMatrix();
 		updateDom();
 		window.requestAnimationFrame(render);
