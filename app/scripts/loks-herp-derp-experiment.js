@@ -18,6 +18,7 @@ Licensed under the MIT license.
 		matrixTemplate = new window['WebKitCSSMatrix'](),
 		domWebKit3dMatrix = new window['WebKitCSSMatrix'](),
 		eventBasedDeltaUpdaterCallback,
+		intervalBasedDeltaUpdaterCallback,
 
 		effectStateFactory = function(){
 			return {
@@ -83,7 +84,9 @@ Licensed under the MIT license.
 		// delta.s.z =	1+0.0000;
 
 		//applyDelta
-		applyDeltaToEffectState(delta);
+		intervalBasedDeltaUpdaterCallback = function(){
+			applyDeltaToEffectState(delta);
+		};
 	}
 
 	function applyDeltaToEffectState(delta){
@@ -191,18 +194,26 @@ Licensed under the MIT license.
 	/*=====================================
 	Event Emitterrrz
 	=====================================*/
-	function setupEventsListers(){
+	function setupEventEmitters(){
+
+		setInterval(updateDeltaRegularly, 10);
+
 		//for production, both need to coded with an adapter.
-
 		window.addEventListener('touchmove', updateDeltaUponEvent, false);
-
 		window.addEventListener('mousemove', updateDeltaUponEvent, false);
 	}
 
-	//static framerate.
-	function setupIntervalDeltaDigest(){
 
-		updateDeltaRegularly();
+
+	/*=====================================
+	Delta Digest
+	=====================================*/
+	function digestDelta(){
+		if (intervalBasedDeltaUpdaterCallback){
+			intervalBasedDeltaUpdaterCallback();
+			intervalBasedDeltaUpdaterCallback = null;
+		}
+
 
 		if (eventBasedDeltaUpdaterCallback){
 			eventBasedDeltaUpdaterCallback();
@@ -211,10 +222,10 @@ Licensed under the MIT license.
 	}
 
 	/*  ============================================================
-	Rednerinnnnnng
+	Render
 	============================================================  */
 	function render() {
-		setupIntervalDeltaDigest();
+		digestDelta();
 		updateMatrix();
 		updateDom();
 		window.requestAnimationFrame(render);
@@ -222,10 +233,10 @@ Licensed under the MIT license.
 
 
 	/*=====================================
-	Engine *Start*
+	Engine
 	=====================================*/
 	function init() {
-		setupEventsListers();
+		setupEventEmitters();
 		render();
 	}
 

@@ -451,8 +451,8 @@ module.exports = function (grunt) {
         // },
         packer: {
             options: {
-                separator: ': ',
-                punctuation: 'alert("test");',
+                separator: '',
+                punctuation: '/*MIT License*/',
             },
             dist: {
                 files: {
