@@ -15,7 +15,7 @@ Licensed under the MIT license.
 	=====================================*/
 	var dom = window.document.querySelectorAll('.target')[0],
 
-		matrixTemplate = new window['WebKitCSSMatrix'](),
+		matrixResetTemplate = new window['WebKitCSSMatrix'](),
 		domWebKit3dMatrix = new window['WebKitCSSMatrix'](),
 		digest = {
 			eventBased: null,
@@ -114,7 +114,6 @@ Licensed under the MIT license.
 	/*=====================================
 	Generate WebKitCSSMatrix String
 	=====================================*/
-	var getMatrix3dCSS = getMatrix3dCSSManually;
 
 	//enforced version
 	function getMatrix3dCSSManually(m) {
@@ -140,6 +139,7 @@ Licensed under the MIT license.
 		//bad 'stair step' animation experience.
 		return webkitMatrix.toString();
 	}
+	var getMatrix3dCSS = getMatrix3dCSSManually;
 
 
 
@@ -147,17 +147,15 @@ Licensed under the MIT license.
 	Update the Matrix different status
 	============================================================  */
 	function updateMatrix() {
-		//reuse the template
-		var currentMatrix3d = matrixTemplate;
-
 
 		var r = effectState.r,
 			t = effectState.t,
 			s = effectState.s
 		;
 
-		// *v*
-		domWebKit3dMatrix = currentMatrix3d
+		//reset the transformation matrix
+		domWebKit3dMatrix = matrixResetTemplate;
+		domWebKit3dMatrix = domWebKit3dMatrix
 								.rotate(
 									r.x,
 									r.y,
@@ -191,13 +189,17 @@ Licensed under the MIT license.
 	/*=====================================
 	Event Emitterrrz
 	=====================================*/
-	function setupEventEmitterz(){
+	function setupEventEmitter(){
 
 		setInterval(deltaIntervalHandler, 10);
 
 		//for production, both need to coded with an adapter.
-		window.addEventListener('touchmove', deltaEventHandelr, false);
-		window.addEventListener('mousemove', deltaEventHandelr, false);
+		if (typeof window.document.ontouchstart !== 'undefined'){
+			window.addEventListener('touchmove', deltaEventHandelr, false);
+		}
+		if (typeof window.document.onmousemove !== 'undefined'){
+			window.addEventListener('mousemove', deltaEventHandelr, false);
+		}
 	}
 
 
@@ -205,7 +207,7 @@ Licensed under the MIT license.
 	/*=====================================
 	Delta Digest
 	=====================================*/
-	function digestAllDelta(){
+	function digestDelta(){
 		var skipRender = false;
 
 		if (digest.eventBased){
@@ -231,12 +233,13 @@ Licensed under the MIT license.
 	}
 
 	/*  ============================================================
-	renderz
+	render
 	============================================================  */
-	function renderz() {
-		window.requestAnimationFrame(renderz);
-		var skipRender = digestAllDelta();
+	function render() {
+		window.requestAnimationFrame(render);
+		var skipRender = digestDelta();
 		if (skipRender) {return;}
+
 		updateMatrix();
 		updateDom();
 	}
@@ -246,8 +249,8 @@ Licensed under the MIT license.
 	Engine
 	=====================================*/
 	function init() {
-		setupEventEmitterz();
-		renderz();
+		setupEventEmitter();
+		render();
 	}
 
 	window.addEventListener('DOMContentLoaded', function() {
