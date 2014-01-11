@@ -26,38 +26,6 @@ Licensed under the MIT license.
 			eventBased: null,
 			intervalBased: null
 		},
-		effectStateTemplate = {
-			r: {
-				x: 0,
-				y: 0,
-				z: 0
-			},
-			t: {
-				x: 0,
-				y: 0,
-				z: 0
-			},
-			s: {
-				x: 1,
-				y: 1,
-				z: 1
-			}
-		},
-		effectStateReset = function(eState){
-			eState.r.x = 0;
-			eState.r.y = 0;
-			eState.r.z = 0;
-
-			eState.t.x = 0;
-			eState.t.y = 0;
-			eState.t.z = 0;
-
-			eState.s.x = 1;
-			eState.s.y = 1;
-			eState.s.z = 1;
-
-			return eState;
-		},
 		effectStateFactory = function(){
 			return {
 				r: {
@@ -77,8 +45,24 @@ Licensed under the MIT license.
 				}
 			};
 		},
-		effectStateDeltaFactory = function(){
-			return effectStateReset(effectStateTemplate);
+		effectStateReset = function(eState){
+			if (!eState){
+				return effectStateFactory();
+			}
+
+			eState.r.x = 0;
+			eState.r.y = 0;
+			eState.r.z = 0;
+
+			eState.t.x = 0;
+			eState.t.y = 0;
+			eState.t.z = 0;
+
+			eState.s.x = 0;
+			eState.s.y = 0;
+			eState.s.z = 0;
+
+			return eState;
 		},
 		effectState = effectStateFactory();
 
@@ -88,7 +72,7 @@ Licensed under the MIT license.
 	=====================================*/
 	function deltaEventHandelr(event) {
 		event.preventDefault();
-		var delta = effectStateDeltaFactory();
+		var delta = effectStateReset();
 
 		delta.r.x =	-0.5;
 		delta.r.y =	-0.5;
@@ -103,12 +87,14 @@ Licensed under the MIT license.
 		delta.s.z =	1-0.0007;
 
 		//applyDelta
-		digest.eventBased = delta;
+		digest.eventBased = function(){
+			applyDelta(delta);
+		};
 
 	}
 
-	function deltaInternalHandler() {
-		var delta = effectStateDeltaFactory();
+	function deltaIntervalHandler() {
+		var delta = effectStateReset();
 
 		delta.r.x =	0.1;
 		delta.r.y =	0.1;
@@ -123,11 +109,12 @@ Licensed under the MIT license.
 		// delta.s.z =	1+0.0000;
 
 		//applyDelta
-		digest.intervalBased = delta;
+		digest.intervalBased = function(){
+			applyDelta(delta);
+		};
 	}
 
 	function applyDelta(delta){
-		console.log(!!!delta);
 		if (!!!delta){
 			return;
 		}
@@ -150,6 +137,7 @@ Licensed under the MIT license.
 	/*=====================================
 	Generate WebKitCSSMatrix String
 	=====================================*/
+
 	//enforced version
 	function getMatrix3dCSSManually(m) {
 		//tries to limit the floating point
@@ -226,11 +214,11 @@ Licensed under the MIT license.
 	=====================================*/
 	function setupEventEmitter(){
 
-		setInterval(deltaInternalHandler, 16);
+		setInterval(deltaIntervalHandler, 10);
 
 		//for production, both need to coded with an adapter.
-		// window.addEventListener('touchmove', deltaEventHandelr, false);
-		// window.addEventListener('mousemove', deltaEventHandelr, false);
+		window.addEventListener('touchmove', deltaEventHandelr, false);
+		window.addEventListener('mousemove', deltaEventHandelr, false);
 	}
 
 
@@ -239,24 +227,40 @@ Licensed under the MIT license.
 	Delta Digest
 	=====================================*/
 	function digestDelta(){
+		var skipRender = false;
 
-		applyDelta(digest.eventBased);
-		// applyDelta(digest.intervalBased);
+		if (digest.eventBased){
+			digest.eventBased();
+			digest.eventBased = null;
 
+			skipRender = false;
+		}else{
+			skipRender = true;
+		}
+
+		if (digest.intervalBased){
+
+			digest.intervalBased();
+			digest.intervalBased = null;
+
+			skipRender = false;
+		}else{
+			skipRender = true;
+		}
+
+		return skipRender;
 	}
 
 	/*  ============================================================
 	render
 	============================================================  */
-
 	function render() {
+		window.requestAnimationFrame(render);
+		var skipRender = digestDelta();
+		if (skipRender) {return;}
 
-
-		digestDelta();
 		updateMatrix();
 		updateDom();
-
-		window.requestAnimationFrame(render);
 	}
 
 
